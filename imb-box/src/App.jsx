@@ -55,7 +55,7 @@ export default function App() {
   return (
     <div className="v1-container">
       <header className="v1-header">
-        <h1>Episodia (Versión 1 - Base)</h1>
+        <h1>IMB-BOX (Versión 1 - Base)</h1>
         {selectedShow && (
           <button className="v1-btn" onClick={() => setSelectedShow(null)}>
             ← Volver al listado
