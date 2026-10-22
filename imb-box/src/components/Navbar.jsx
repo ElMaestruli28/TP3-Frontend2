@@ -1,11 +1,16 @@
 // src/components/Navbar.jsx
+import SearchBar from "./SearchBar";
+
 export default function Navbar({
   view,
   setView,
   searchQuery,
   setSearchQuery,
-  onSearch,
   ratedCount,
+  trendingShows,
+  ratings,
+  onSelectShow,
+  onLiveResultsChange,
 }) {
   return (
     <header className="ep-navbar">
@@ -31,15 +36,14 @@ export default function Navbar({
         </nav>
       </div>
 
-      <form className="ep-search-bar" onSubmit={onSearch}>
-        <input
-          type="text"
-          placeholder="Buscar serie (ej. Black Clover, Dark, Arcane)..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        <button type="submit">Buscar</button>
-      </form>
+      <SearchBar
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        trendingShows={trendingShows}
+        ratings={ratings}
+        onSelectShow={onSelectShow}
+        onLiveResultsChange={onLiveResultsChange}
+      />
     </header>
   );
 }

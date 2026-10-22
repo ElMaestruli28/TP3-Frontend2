@@ -151,7 +151,6 @@ body {
   background: var(--crimson);
   color: white;
   border: none;
-  padding: 7px 14px;
   border-radius: 999px;
   font-weight: 600;
   font-size: 13px;
@@ -789,5 +788,630 @@ body {
 
   .ep-hero-left {
     max-width: 780px;
+  }
+}
+
+/* ==========================================================================
+   BUSCADOR EN VIVO Y PREVIA DE 3 SERIES EN TENDENCIA (MOBILE-FIRST)
+   ========================================================================== */
+
+.ep-search-container {
+  position: relative;
+  width: 100%;
+}
+
+.ep-search-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.ep-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: #1c1f2b;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 9px 12px;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.ep-search-bar.focused {
+  border-color: var(--border-highlight);
+  background: #222634;
+}
+
+.ep-search-icon {
+  font-size: 14px;
+  opacity: 0.65;
+}
+
+.ep-search-bar input {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  width: 100%;
+  outline: none;
+  font-size: 14px;
+}
+
+/* Botón circular X para limpiar el input */
+.ep-search-clear-btn {
+  background: rgba(255, 255, 255, 0.16);
+  color: var(--text-primary);
+  border: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 11px;
+  display: grid;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.ep-search-cancel-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Panel desplegable de tendencias / resultados en vivo */
+.ep-search-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: #101219;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85);
+  z-index: 200;
+  max-height: 78vh;
+  overflow-y: auto;
+}
+
+.ep-search-heading-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.ep-search-heading {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.ep-search-heading-row .ep-search-heading {
+  margin-bottom: 0;
+}
+
+.ep-search-loading {
+  font-size: 12px;
+  color: var(--gold);
+  font-family: var(--font-mono);
+}
+
+.ep-search-empty {
+  color: var(--text-secondary);
+  font-size: 13px;
+  padding: 12px 0;
+}
+
+/* LISTA DE 3 SERIES EN TENDENCIA (ESTILO RECOMENDADOS) */
+.ep-trending-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ep-trending-item {
+  display: grid;
+  grid-template-columns: 118px 1fr 38px;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+.ep-trending-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.ep-trending-thumb-wrap {
+  position: relative;
+  width: 118px;
+  height: 68px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #181b26;
+}
+
+.ep-trending-thumb-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 25%;
+}
+
+.ep-top-badge {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  background: #e50914;
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: 4px;
+  line-height: 1.1;
+}
+
+.ep-trending-tag {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #e50914;
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.ep-trending-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  overflow: hidden;
+}
+
+.ep-trending-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ep-trending-meta {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.ep-trending-play-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  background: transparent;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.ep-trending-item:hover .ep-trending-play-btn {
+  transform: scale(1.08);
+  border-color: var(--crimson);
+  color: var(--crimson);
+}
+
+/* RESULTADOS EN TIEMPO REAL MIENTRAS ESCRIBES (TARJETAS HORIZONTALES) */
+.ep-live-results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ep-live-result-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #1b222c;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  padding-right: 12px;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.ep-live-result-card:hover {
+  background: #232c38;
+  transform: translateX(3px);
+}
+
+.ep-live-result-thumb {
+  width: 110px;
+  height: 62px;
+  flex-shrink: 0;
+  background: #0d0f14;
+}
+
+.ep-live-result-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ep-live-result-body {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 0;
+}
+
+.ep-live-result-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ep-live-result-sub {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #cbd5e1;
+  margin-top: 3px;
+}
+
+/* AJUSTES EN TABLET Y PC */
+@media (min-width: 768px) {
+  .ep-search-container {
+    max-width: 440px;
+  }
+
+  .ep-search-cancel-btn {
+    display: none;
+  }
+
+  .ep-search-dropdown {
+    width: 480px;
+    left: auto;
+    right: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ep-search-container {
+    max-width: 480px;
+  }
+
+  .ep-search-dropdown {
+    width: 540px;
+  }
+}
+
+/* ==========================================================================
+   CARRUSELES HORIZONTALES POR CATEGORÍA (ESTILO NETFLIX MOBILE-FIRST)
+   ========================================================================== */
+
+.ep-carousels-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.ep-carousel-section {
+  width: 100%;
+  position: relative;
+}
+
+.ep-carousel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+
+.ep-carousel-title {
+  font-family: var(--font-sans);
+  font-size: 19px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.ep-carousel-subtitle {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* En celular ocultamos las flechas porque el usuario desliza con el dedo */
+.ep-carousel-arrows {
+  display: none;
+}
+
+/* Pista horizontal deslizable con efecto snap */
+.ep-carousel-track {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding-bottom: 8px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+}
+
+.ep-carousel-track::-webkit-scrollbar {
+  display: none; /* Chrome / Safari */
+}
+
+/* En móvil: 3 pósters visibles + asoma el 4to a la derecha como en la foto */
+.ep-carousel-item {
+  flex: 0 0 30%;
+  min-width: 112px;
+  max-width: 150px;
+  scroll-snap-align: start;
+}
+
+/* Badges especiales dentro del póster (Ranking #1-100 y Cinta Roja inferior) */
+.ep-rank-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(8, 9, 13, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 6px;
+  border-radius: 5px;
+  z-index: 2;
+}
+
+.ep-rank-badge.ep-rank-top10 {
+  background: #e50914;
+  border-color: #e50914;
+  color: #ffffff;
+}
+
+.ep-api-badge {
+  background: rgba(18, 20, 28, 0.85);
+  color: var(--gold);
+  border: 1px solid rgba(255, 184, 0, 0.35);
+}
+
+.ep-bottom-ribbon {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #e50914;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+  z-index: 2;
+}
+
+/* ==========================================================================
+   ESCALADO DE CARRUSELES PARA TABLET Y PC FULL-SCREEN
+   ========================================================================== */
+
+@media (min-width: 768px) {
+  .ep-carousels-stack {
+    gap: 36px;
+  }
+
+  .ep-carousel-title {
+    font-size: 22px;
+  }
+
+  .ep-carousel-track {
+    gap: 14px;
+  }
+
+  .ep-carousel-item {
+    flex: 0 0 180px;
+    max-width: 180px;
+  }
+
+  .ep-carousel-arrows {
+    display: flex;
+    gap: 8px;
+  }
+
+  .ep-carousel-arrow-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    font-size: 20px;
+    line-height: 1;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  .ep-carousel-arrow-btn:hover {
+    background: var(--crimson);
+    border-color: var(--crimson);
+    color: #ffffff;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ep-carousels-stack {
+    gap: 44px;
+  }
+
+  .ep-carousel-title {
+    font-size: 24px;
+  }
+
+  .ep-carousel-track {
+    gap: 18px;
+  }
+
+  .ep-carousel-item {
+    flex: 0 0 215px;
+    max-width: 215px;
+  }
+}
+
+/* ==========================================================================
+   GLOBOS DE PLATAFORMAS DE STREAMING POR REGIÓN (MOBILE-FIRST)
+   ========================================================================== */
+
+.ep-streaming-container {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.ep-streaming-container.compact {
+  margin-top: 0;
+  margin-bottom: 18px;
+  padding-top: 0;
+  border-top: none;
+}
+
+.ep-streaming-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.ep-streaming-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+}
+
+/* Selector de Región (Latinoamérica / EE. UU. / España) */
+.ep-region-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ep-region-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--bg-obsidian);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ep-region-btn.active,
+.ep-region-btn:hover {
+  background: rgba(255, 51, 102, 0.16);
+  color: var(--text-primary);
+  border-color: var(--crimson);
+}
+
+/* Fila contenedora de los globos de plataformas */
+.ep-streaming-globes-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Globo individual (Logo a la izquierda + Nombre al costado) */
+.ep-stream-globe {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 14px 6px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-obsidian);
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+
+.ep-stream-globe:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.15);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+}
+
+.ep-stream-logo-wrap {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(8, 9, 13, 0.65);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.ep-platform-svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.ep-stream-name {
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+
+.ep-original-network-globe {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--border-subtle);
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.ep-tv-icon {
+  font-size: 12px;
+}
+
+@media (min-width: 768px) {
+  .ep-streaming-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
   }
 }

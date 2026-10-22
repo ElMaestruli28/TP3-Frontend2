@@ -1,11 +1,29 @@
 // src/components/ShowCard.jsx
 import { getScoreMeta, calculateEpisodeAverage } from "../utilidades/scoreHelpers";
 
-export default function ShowCard({ show, showRating, onSelect }) {
+export default function ShowCard({
+  show,
+  showRating,
+  onSelect,
+  rankNumber = null,
+  ribbonText = null,
+}) {
   const general = showRating?.generalScore;
   const avg = calculateEpisodeAverage(showRating);
-  const displayScore = general || avg;
-  const badgeMeta = getScoreMeta(displayScore);
+  const userScore = general || avg;
+
+  const apiScore = show.rating?.average
+    ? Math.round(show.rating.average * 10)
+    : null;
+
+  const badgeMeta = getScoreMeta(userScore);
+
+  // Si tiene episodios embebidos y es una Mini-serie, mostramos la cantidad fija de capítulos
+  const totalFixedEpisodes = show._embedded?.episodes?.length;
+  const finalRibbonText =
+    ribbonText === "Mini-serie" && totalFixedEpisodes
+      ? `Mini-serie • ${totalFixedEpisodes} caps`
+      : ribbonText;
 
   return (
     <article className="ep-poster-card" onClick={() => onSelect(show)}>
@@ -19,10 +37,31 @@ export default function ShowCard({ show, showRating, onSelect }) {
           alt={show.name || show.showName}
           loading="lazy"
         />
-        {displayScore && (
-          <span className={`ep-floating-badge ${badgeMeta.className}`}>
-            {displayScore}/100
+
+        {rankNumber && (
+          <span
+            className={`ep-rank-badge ${
+              rankNumber <= 10 ? "ep-rank-top10" : ""
+            }`}
+          >
+            {rankNumber <= 10 ? `TOP ${rankNumber}` : `#${rankNumber}`}
           </span>
+        )}
+
+        {userScore ? (
+          <span className={`ep-floating-badge ${badgeMeta.className}`}>
+            {userScore}/100
+          </span>
+        ) : (
+          apiScore && (
+            <span className="ep-floating-badge ep-api-badge">
+              ★ {apiScore}
+            </span>
+          )
+        )}
+
+        {finalRibbonText && (
+          <span className="ep-bottom-ribbon">{finalRibbonText}</span>
         )}
       </div>
 

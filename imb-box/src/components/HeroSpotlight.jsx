@@ -1,6 +1,7 @@
 // src/components/HeroSpotlight.jsx
 import { useState, useEffect } from "react";
 import { stripHtml, getScoreMeta } from "../utilidades/scoreHelpers";
+import StreamingBadges from "../components/StreamingBadges";
 
 export default function HeroSpotlight({
   show,
@@ -87,7 +88,7 @@ export default function HeroSpotlight({
             </div>
 
             <p className="ep-hero-synopsis">{synopsis}</p>
-
+            <StreamingBadges compact="{true}" show="{show}"/>
             <div className="ep-hero-actions">
               <button
                 className="ep-btn-primary-light"

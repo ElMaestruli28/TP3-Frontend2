@@ -1,6 +1,7 @@
 // src/pages/ShowDetail.jsx
 import { useMemo } from "react";
 import { getScoreMeta, calculateEpisodeAverage } from "../utilidades/scoreHelpers";
+import StreamingBadges from "../components/StreamingBadges";
 import EpisodeHeatmap from "../components/EpisodeHeatmap";
 import SeasonTabs from "../components/SeasonTabs";
 import EpisodeRow from "../components/EpisodeRow";
@@ -56,6 +57,9 @@ export default function ShowDetail({
             className="ep-detail-summary"
             dangerouslySetInnerHTML={{ __html: show.summary }}
           />
+
+          {/* GLOBOS DE PLATAFORMAS DE STREAMING POR REGIÓN */}
+          <StreamingBadges show={show} />
 
           <div className="ep-Scoreboard">
             <div className="ep-score-panel">
