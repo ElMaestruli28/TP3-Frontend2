@@ -1,5 +1,5 @@
 // src/pages/ShowDetail.jsx
-import { useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { getScoreMeta, calculateEpisodeAverage } from "../utilidades/scoreHelpers";
 import StreamingBadges from "../components/StreamingBadges";
 import EpisodeHeatmap from "../components/EpisodeHeatmap";
@@ -14,8 +14,16 @@ export default function ShowDetail({
   showRatings,
   onBack,
   onSetGeneralScore,
+  onSaveReviewAndScore, // Función que guarda en Firebase y LocalStorage
   onSetEpisodeData,
 }) {
+  const [reviewText, setReviewText] = useState(showRatings?.review || "");
+  const [savedMessage, setSavedMessage] = useState(false);
+
+  useEffect(() => {
+    setReviewText(showRatings?.review || "");
+  }, [showRatings?.review]);
+
   const seasons = useMemo(() => {
     return Array.from(new Set(episodes.map((e) => e.season))).sort(
       (a, b) => a - b
@@ -28,6 +36,12 @@ export default function ShowDetail({
   const ratedEpisodesCount = Object.values(showRatings?.episodes || {}).filter(
     (e) => e.score
   ).length;
+
+  const handleSave = () => {
+    onSaveReviewAndScore(show, reviewText);
+    setSavedMessage(true);
+    setTimeout(() => setSavedMessage(false), 2500);
+  };
 
   return (
     <div className="ep-detail-view">
@@ -58,7 +72,6 @@ export default function ShowDetail({
             dangerouslySetInnerHTML={{ __html: show.summary }}
           />
 
-          {/* GLOBOS DE PLATAFORMAS DE STREAMING POR REGIÓN */}
           <StreamingBadges show={show} />
 
           <div className="ep-Scoreboard">
@@ -99,6 +112,34 @@ export default function ShowDetail({
                 Calculado sobre {ratedEpisodesCount} de {episodes.length} episodios
                 calificados.
               </p>
+            </div>
+          </div>
+
+          {/* RECUADRO DE RESEÑA CON BOTÓN DE SUBIDA */}
+          <div className="ep-review-panel">
+            <div className="ep-review-header-row">
+              <span className="ep-score-label">Reseña o Crítica General de la Serie</span>
+              {savedMessage && (
+                <span className="ep-review-saved-badge">✓ Guardado en Firebase</span>
+              )}
+            </div>
+
+            <textarea
+              className="ep-review-textarea"
+              placeholder="Escribe tu opinión general de esta serie..."
+              value={reviewText}
+              onChange={(e) => setReviewText(e.target.value)}
+              rows={4}
+            />
+
+            <div className="ep-review-footer">
+              <button
+                type="button"
+                className="ep-btn-primary-light ep-review-save-btn"
+                onClick={handleSave}
+              >
+                Guardar reseña y puntuación
+              </button>
             </div>
           </div>
         </div>

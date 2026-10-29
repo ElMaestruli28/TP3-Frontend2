@@ -57,3 +57,62 @@ export function isVerifiedMiniseries(show) {
     totalEpisodes <= 12
   );
 }
+
+/**
+ * Calcula la cantidad de "Likes" de una serie combinando su popularidad
+ + el Like propio del usuario en tiempo real.
+ */
+export function getShowLikesCount(show, showRating) {
+  if (!show) return 0;
+  const weightBase = (show.weight || 70) * 142;
+  const ratingBonus = Math.round((show.rating?.average || 7.5) * 410);
+  const idVariance = (show.id % 97) * 19;
+  const userLikeBonus = showRating?.liked ? 1 : 0;
+
+  return weightBase + ratingBonus + idVariance + userLikeBonus;
+}
+
+/**
+ * Construye el mazo deslizable:
+ * - Posición 0: La serie que el usuario acaba de tocar.
+ * - Siguientes posiciones: Series recomendadas según géneros afines (de la serie actual
+ *   y de las series a las que el usuario dio "Like"), ordenadas de mayor a menor cantidad de Likes.
+ */
+export function buildRecommendedDeck(initialShow, allShows = [], ratings = {}) {
+  if (!initialShow) return [];
+
+  // Recolectar géneros favoritos (de la serie abierta + series con Like del usuario)
+  const preferredGenres = new Set(initialShow.genres || []);
+  Object.values(ratings).forEach((entry) => {
+    if (entry.liked && Array.isArray(entry.genres)) {
+      entry.genres.forEach((g) => preferredGenres.add(g));
+    }
+  });
+
+  const others = allShows.filter((s) => s.id !== initialShow.id);
+
+  const scoredCandidates = others.map((candidate) => {
+    const likes = getShowLikesCount(candidate, ratings[candidate.id]);
+    const matchingGenres = (candidate.genres || []).filter((g) =>
+      preferredGenres.has(g)
+    ).length;
+
+    return {
+      show: candidate,
+      likes,
+      matchingGenres,
+    };
+  });
+
+  // Ordenar: primero las que comparten género con tus gustos y luego por mayor cantidad de Likes
+  scoredCandidates.sort((a, b) => {
+    if (b.matchingGenres > 0 && a.matchingGenres === 0) return 1;
+    if (a.matchingGenres > 0 && b.matchingGenres === 0) return -1;
+    return b.likes - a.likes;
+  });
+
+  return [
+    initialShow,
+    ...scoredCandidates.slice(0, 18).map((item) => item.show),
+  ];
+}

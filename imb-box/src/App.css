@@ -1415,3 +1415,1125 @@ body {
     align-items: center;
   }
 }
+
+/* ==========================================================================
+   MODAL DE TARJETA RÁPIDA (ALTURA 100% VERTICAL / FULL-HEIGHT)
+   ========================================================================== */
+
+.ep-qmodal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(4, 5, 8, 0.95);
+  backdrop-filter: blur(24px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* Evita scrolls dobles en la pantalla principal */
+  animation: qmodalFadeIn 0.2s ease-out;
+}
+
+@keyframes qmodalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.ep-qmodal-ambient {
+  position: fixed;
+  inset: -40px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(70px) saturate(1.6) brightness(0.35);
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+/* Forzamos que la hoja contenedora ocupe exactamente el 100% de la altura vertical */
+.ep-qmodal-sheet {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 480px;
+  height: 100vh;
+  max-height: 100vh;
+  padding: 12px 0 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.ep-qmodal-header {
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
+  align-items: center;
+  padding: 0 16px;
+  flex-shrink: 0;
+}
+
+.ep-qmodal-title-group {
+  text-align: center;
+}
+
+.ep-qmodal-title {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ep-qmodal-subtitle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 2px;
+}
+
+.ep-qmodal-likes-count {
+  color: #f3f4f6;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.ep-qmodal-rec-pill {
+  background: rgba(255, 51, 102, 0.22);
+  border: 1px solid rgba(255, 51, 102, 0.45);
+  color: #ff80a0;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 999px;
+}
+
+.ep-qmodal-close-btn {
+  background: transparent;
+  border: none;
+  color: #d1d5db;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  justify-self: end;
+  padding: 4px;
+}
+
+/* Carrusel flexible que expande el póster para ocupar toda la altura vertical disponible */
+.ep-qmodal-carousel-wrap {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  margin: 8px 0;
+  display: flex;
+  align-items: center;
+}
+
+.ep-qmodal-poster-track {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding: 0 10%;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  align-items: center;
+}
+
+.ep-qmodal-poster-track::-webkit-scrollbar {
+  display: none;
+}
+
+.ep-qmodal-poster-slide {
+  flex: 0 0 100%;
+  height: 100%;
+  max-height: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  scroll-snap-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  cursor: pointer;
+  background: #08090d;
+}
+
+.ep-qmodal-poster-slide.peeking {
+  transform: scale(0.93);
+  opacity: 0.65;
+}
+
+.ep-qmodal-poster-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Estira y llena el espacio vertical sin deformar */
+  display: block;
+}
+
+.ep-qmodal-nav-arrow {
+  display: none;
+}
+
+.ep-qmodal-rate-drawer {
+  margin: 0 16px 10px;
+  padding: 10px 14px;
+  background: rgba(18, 20, 28, 0.92);
+  border: 1px solid rgba(255, 184, 0, 0.4);
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.ep-qmodal-rate-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.ep-qmodal-rate-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.ep-qmodal-rate-value {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 16px;
+  color: var(--gold);
+}
+
+.ep-qmodal-rate-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ep-qmodal-actions-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  padding: 6px 16px 10px;
+  flex-shrink: 0;
+}
+
+.ep-qmodal-action-item {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 6px 2px;
+  border-radius: 10px;
+}
+
+.ep-qmodal-svg {
+  width: 28px;
+  height: 28px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ep-qmodal-svg-badge {
+  fill: #08090d;
+}
+
+.ep-qmodal-action-item span {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ep-qmodal-action-item.active-watch { color: #10b981; }
+.ep-qmodal-action-item.active-watch .ep-qmodal-svg { fill: rgba(16, 185, 129, 0.2); }
+
+.ep-qmodal-action-item.active-like { color: var(--crimson); }
+.ep-qmodal-action-item.active-like .ep-qmodal-svg { fill: var(--crimson); stroke: var(--crimson); }
+
+.ep-qmodal-action-item.active-rate { color: var(--gold); }
+.ep-qmodal-action-item.active-rate .ep-qmodal-svg { fill: var(--gold); stroke: var(--gold); }
+
+.ep-qmodal-action-item.active-watchlist { color: #38bdf8; }
+
+.ep-qmodal-footer {
+  padding: 0 16px;
+  flex-shrink: 0;
+}
+
+.ep-qmodal-episodes-btn {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  padding: 11px 16px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.ep-qmodal-ep-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--gold);
+}
+
+@media (min-width: 768px) {
+  .ep-qmodal-sheet {
+    max-width: 440px;
+    height: 92vh;
+    max-height: 880px;
+    border-radius: 24px;
+    background: rgba(14, 16, 23, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 32px 80px rgba(0, 0, 0, 0.95);
+    padding: 18px 0;
+  }
+
+  .ep-qmodal-nav-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(8, 9, 13, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: #ffffff;
+    font-size: 20px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+  }
+  .ep-qmodal-nav-arrow.left { left: 8px; }
+  .ep-qmodal-nav-arrow.right { right: 8px; }
+}
+/* ==========================================================================
+   POPULAR LISTS & CREADOR DE LISTAS (ESTILO LETTERBOXD 5-POSTER STACK)
+   ========================================================================== */
+
+.ep-popular-lists-home {
+  width: 100%;
+  margin: 8px 0;
+}
+
+.ep-pop-lists-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.ep-pop-lists-kicker {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #9ab;
+}
+
+.ep-pop-lists-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ep-pop-lists-create-link {
+  background: transparent;
+  border: none;
+  color: var(--crimson);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ep-pop-lists-more {
+  background: transparent;
+  border: none;
+  color: #9ab;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.ep-pop-lists-more:hover {
+  color: #ffffff;
+}
+
+/* Grilla Mobile-First para las tarjetas de Listas (1 col en móvil, 3 en PC) */
+.ep-pop-lists-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.ep-list-card {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Collage horizontal de 5 pósters solapados como en Letterboxd */
+.ep-list-poster-stack {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  aspect-ratio: 16 / 7.2;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #0d0f14;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.ep-list-card:hover .ep-list-poster-stack {
+  border-color: #ffffff;
+  transform: translateY(-3px);
+}
+
+.ep-list-stack-slice {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  margin-left: -14px;
+  box-shadow: 6px 0 16px rgba(0, 0, 0, 0.85);
+}
+
+.ep-list-stack-slice:first-child {
+  margin-left: 0;
+  flex: 1.15;
+}
+
+.ep-list-stack-slice img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ep-list-empty-slice {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-surface);
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.ep-list-card-title {
+  font-family: var(--font-sans);
+  font-size: 17px;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.25;
+  margin-top: 2px;
+}
+
+.ep-list-card:hover .ep-list-card-title {
+  color: var(--gold);
+}
+
+.ep-list-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: #8e96aa;
+}
+
+.ep-list-author {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ep-list-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.ep-list-author-name {
+  font-weight: 700;
+  color: #b0b8c9;
+}
+
+.ep-list-stats {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ep-list-like-pill {
+  background: transparent;
+  border: none;
+  color: #8e96aa;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.ep-list-like-pill.liked {
+  color: var(--crimson);
+  font-weight: 700;
+}
+
+/* PÁGINA COMPLETA DE LISTAS Y FORMULARIO CREADOR */
+.ep-lists-page-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.ep-create-list-box {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-highlight);
+  border-radius: 18px;
+  padding: 20px;
+  margin-bottom: 36px;
+}
+
+.ep-create-list-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.ep-create-list-fields,
+.ep-create-list-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ep-field-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.ep-text-input {
+  width: 100%;
+  background: var(--bg-obsidian);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: var(--font-sans);
+  outline: none;
+}
+
+.ep-text-input:focus {
+  border-color: var(--crimson);
+}
+
+.ep-textarea {
+  min-height: 84px;
+  resize: vertical;
+}
+
+.ep-picker-results {
+  background: var(--bg-obsidian);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  overflow: hidden;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.ep-picker-result-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.ep-picker-result-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.ep-picker-result-item img {
+  width: 34px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.ep-picker-result-item div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+}
+
+.ep-picker-result-item span {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.ep-picker-add-tag {
+  color: var(--gold) !important;
+  font-weight: 700;
+}
+
+.ep-draft-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.ep-draft-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-obsidian);
+  border: 1px solid var(--border-subtle);
+  padding: 4px 10px 4px 6px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.ep-draft-chip img {
+  width: 20px;
+  height: 28px;
+  object-fit: cover;
+  border-radius: 3px;
+}
+
+.ep-draft-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--gold);
+}
+
+.ep-draft-chip button {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.ep-create-list-footer {
+  margin-top: 18px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ep-empty-lists-msg {
+  color: var(--text-secondary);
+  font-size: 14px;
+  padding: 12px 0;
+}
+
+.ep-list-detail-hero {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 22px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ep-list-detail-desc {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-top: 6px;
+  max-width: 720px;
+}
+
+.ep-list-detail-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ep-list-delete-btn {
+  background: rgba(239, 68, 68, 0.16);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ep-remove-from-list-btn {
+  position: absolute;
+  bottom: 54px;
+  right: 8px;
+  z-index: 5;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.9);
+  color: #ffffff;
+  border: none;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* Barra para añadir a listas desde el QuickActionModal */
+.ep-qmodal-list-bar {
+  width: 100%;
+}
+
+.ep-qmodal-list-select,
+.ep-qmodal-newlist-btn {
+  width: 100%;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  padding: 11px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+}
+
+@media (min-width: 768px) {
+  .ep-pop-lists-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+
+  .ep-lists-page-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .ep-create-list-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+
+  .ep-list-detail-hero {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+/* ==========================================================================
+   ESTILOS DE ACTIVIDAD DE AMIGOS ("NEW FROM FRIENDS")
+   ========================================================================== */
+
+.ep-friend-avatar-badge {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+  z-index: 2;
+  background: #12141c;
+}
+
+.ep-friend-avatar-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ep-friend-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 5px;
+  font-size: 11px;
+}
+
+.ep-friend-name {
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: lowercase;
+}
+
+.ep-friend-stars {
+  color: var(--gold);
+  font-size: 10px;
+  letter-spacing: -1px;
+}
+/* ==========================================================================
+   FOOTER (ESTILO LETTERBOXD / MOBILE-FIRST)
+   ========================================================================== */
+
+.ep-footer {
+  width: 100%;
+  background-color: #0c0e14;
+  border-top: 1px solid var(--border-subtle);
+  padding: 32px 20px 40px;
+  margin-top: 60px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.ep-footer-container {
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.ep-footer-links-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.ep-footer-nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 22px;
+}
+
+.ep-footer-nav-links a {
+  color: var(--text-primary);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 13px;
+  transition: color 0.15s ease;
+}
+
+.ep-footer-nav-links a:hover {
+  color: var(--crimson);
+}
+
+.ep-footer-social-icons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.ep-footer-social-icons a {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+  transition: transform 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.ep-footer-social-icons a:hover {
+  transform: translateY(-2px);
+  border-color: var(--crimson);
+  color: var(--crimson);
+}
+
+.ep-footer-legal-row {
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  padding-top: 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.ep-footer-legal-row a {
+  color: var(--text-secondary);
+  text-decoration: underline;
+}
+
+.ep-footer-legal-row a:hover {
+  color: var(--text-primary);
+}
+
+/* ==========================================================================
+   ESTILOS DE LOGOS SVG EN EL FOOTER
+   ========================================================================== */
+
+.ep-footer-social-icons a {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+  transition: transform 0.15s ease, border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.ep-footer-social-icons a:hover {
+  transform: translateY(-2px);
+  border-color: var(--crimson);
+  color: #ffffff;
+  background: var(--crimson);
+}
+
+.ep-social-svg {
+  width: 15px;
+  height: 15px;
+  display: block;
+}
+
+/* En PC alineamos los enlaces a la izquierda y las redes sociales a la derecha exactamente como en la referencia */
+@media (min-width: 768px) {
+  .ep-footer-links-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .ep-footer-nav-links {
+    gap: 8px 24px;
+  }
+}
+
+/* ==========================================================================
+   RECUADRO DE RESEÑA GENERAL (DETALLE DE SERIE)
+   ========================================================================== */
+
+.ep-review-panel {
+  margin-top: 18px;
+  background: var(--bg-obsidian);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.ep-review-textarea {
+  width: 100%;
+  margin-top: 10px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.ep-review-textarea:focus {
+  border-color: var(--crimson);
+}
+
+/* ==========================================================================
+   BOTÓN DE GUARDAR RESEÑA Y PUNTUACIÓN
+   ========================================================================== */
+
+.ep-review-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ep-review-saved-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--emerald);
+  background: rgba(16, 185, 129, 0.14);
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.ep-review-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.ep-review-save-btn {
+  font-size: 12px !important;
+  padding: 8px 18px !important;
+}
+
+/* ==========================================================================
+   MODAL DE AUTENTICACIÓN FIREBASE
+   ========================================================================== */
+
+.ep-auth-modal {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  width: 90%;
+  max-width: 400px;
+  padding: 28px;
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.85);
+  animation: qmodalFadeIn 0.2s ease-out;
+}
+
+.ep-auth-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.ep-auth-header h2 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.ep-auth-error {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #f87171;
+  font-size: 12px;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.ep-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ep-auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ep-auth-field label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.ep-auth-field input {
+  background: var(--bg-obsidian);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+}
+
+.ep-auth-field input:focus {
+  border-color: var(--crimson);
+}
+
+.ep-auth-footer-actions {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.ep-auth-switch-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.ep-auth-switch-btn:hover {
+  color: var(--text-primary);
+}
+
+.ep-auth-divider {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+.ep-nav-auth-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ep-nav-user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  padding: 4px 10px 4px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+}
+
+.ep-nav-username {
+  color: var(--text-secondary);
+  font-weight: 600;
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ep-nav-btn.logout {
+  padding: 4px 10px;
+  font-size: 11px;
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.ep-nav-btn.logout:hover {
+  background: rgba(239, 68, 68, 0.3);
+}

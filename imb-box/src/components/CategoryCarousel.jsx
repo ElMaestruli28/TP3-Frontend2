@@ -10,6 +10,7 @@ export default function CategoryCarousel({
   onSelectShow,
   showRank = false,
   ribbonText = null,
+  friendsMap = {}, // Objeto con { [showId]: { friendName, friendAvatar, friendScore } }
 }) {
   const trackRef = useRef(null);
 
@@ -61,6 +62,7 @@ export default function CategoryCarousel({
               onSelect={onSelectShow}
               rankNumber={showRank ? idx + 1 : null}
               ribbonText={ribbonText}
+              friendActivity={friendsMap[show.id] || null}
             />
           </div>
         ))}

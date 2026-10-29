@@ -1,9 +1,12 @@
 // src/App.jsx
 import { useState, useEffect, useMemo, useRef } from "react";
 import {
+  auth,
   saveShowRatingToFirebase,
   fetchUserRatingsFromFirebase,
+  logoutUser,
 } from "./servicios/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 import {
   calculateEpisodeAverage,
   isVerifiedMiniseries,
@@ -14,10 +17,12 @@ import CategoryCarousel from "./components/CategoryCarousel";
 import ShowGrid from "./components/ShowGrid";
 import ShowDetail from "./pages/ShowDetail";
 import DiaryView from "./components/DiaryView";
+import QuickShowModal from "./components/QuickShowModal";
+import AuthModal from "./components/AuthModal";
+import Footer from "./components/Footer";
 import "./App.css";
 
-const USER_ID = "episodia_member_01";
-
+// Ranking histórico de referencia ("Ranking The Best TV Shows of All Time")
 const ALL_TIME_PRIORITY_TITLES = [
   "Breaking Bad",
   "Game of Thrones",
@@ -68,7 +73,6 @@ const ALL_TIME_PRIORITY_TITLES = [
   "Justified",
 ];
 
-// Candidatas a Miniseries que serán verificadas con sus episodios reales
 const MINISERIES_CANDIDATES = [
   "Chernobyl",
   "Band of Brothers",
@@ -92,13 +96,27 @@ const MINISERIES_CANDIDATES = [
   "Dopesick",
 ];
 
+// Actividad de amigos simulada para el carrusel "New from friends"
+const FRIENDS_ACTIVITY_POOL = [
+  { friendName: "malena", friendAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces", friendScore: 95 },
+  { friendName: "malena", friendAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces", friendScore: 90 },
+  { friendName: "malena", friendAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces", friendScore: 98 },
+  { friendName: "malena", friendAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces", friendScore: 88 },
+  { friendName: "malena", friendAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces", friendScore: 92 },
+  { friendName: "malena", friendAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces", friendScore: 96 },
+];
+
 export default function App() {
-  const [view, setView] = useState("catalog");
+  const [user, setUser] = useState(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
+  const [view, setView] = useState("catalog"); // "catalog" | "detail" | "diary"
   const [allShows, setAllShows] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [featuredShow, setFeaturedShow] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const [quickModalShow, setQuickModalShow] = useState(null);
   const [selectedShow, setSelectedShow] = useState(null);
   const [episodes, setEpisodes] = useState([]);
   const [activeSeason, setActiveSeason] = useState(1);
@@ -110,6 +128,23 @@ export default function App() {
     return local ? JSON.parse(local) : {};
   });
 
+  // 1. Escuchar estado de autenticación en Firebase
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        const cloudData = await fetchUserRatingsFromFirebase(currentUser.uid);
+        if (cloudData && Object.keys(cloudData).length > 0) {
+          setRatings(cloudData);
+        }
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const currentUserId = user ? user.uid : "invitado_local";
+
+  // 2. Cargar catálogo de TVMaze y series clave con sus episodios
   useEffect(() => {
     let isMounted = true;
 
@@ -123,7 +158,6 @@ export default function App() {
         const combinedMap = new Map();
         [...page0, ...page1].forEach((s) => combinedMap.set(s.id, s));
 
-        // 1. Detectar candidatas a miniserie dentro de page0 y page1 (finalizadas en <= 150 días)
         const catalogMiniCandidates = [...page0, ...page1].filter((s) => {
           if (s.status !== "Ended" || !s.premiered || !s.ended) return false;
           const days =
@@ -131,7 +165,6 @@ export default function App() {
           return days >= 0 && days <= 150;
         });
 
-        // Cargar episodios de esas candidatas del catálogo para verificar si tienen 1 temporada y <=12 caps
         await Promise.all(
           catalogMiniCandidates.slice(0, 15).map(async (s) => {
             try {
@@ -139,13 +172,10 @@ export default function App() {
                 `https://api.tvmaze.com/shows/${s.id}/episodes`
               ).then((r) => r.json());
               combinedMap.set(s.id, { ...s, _embedded: { episodes: eps } });
-            } catch {
-              // Ignorar si falla la red en una serie individual
-            }
+            } catch {}
           })
         );
 
-        // 2. Cargar nuestras miniseries y series clave con &embed=episodes para verificar capítulos fijos
         const extraQueries = [
           "Black Clover",
           "The Sopranos",
@@ -190,12 +220,6 @@ export default function App() {
 
     loadCatalog();
 
-    fetchUserRatingsFromFirebase(USER_ID).then((cloudData) => {
-      if (cloudData && Object.keys(cloudData).length > 0 && isMounted) {
-        setRatings((prev) => ({ ...prev, ...cloudData }));
-      }
-    });
-
     return () => {
       isMounted = false;
     };
@@ -205,13 +229,15 @@ export default function App() {
     localStorage.setItem("episodia_v3_data", JSON.stringify(ratings));
   }, [ratings]);
 
-  // Armar las categorías verificadas
+  // 3. Categorías y carruseles organizados
   const categories = useMemo(() => {
     if (allShows.length === 0) {
       return {
         top100: [],
         miniSeries: [],
         trending: [],
+        friendsShows: [],
+        friendsMap: {},
         horror: [],
         comedy: [],
         drama: [],
@@ -221,7 +247,6 @@ export default function App() {
       };
     }
 
-    // 1. Las 100 mejores series de la historia
     const priorityMap = new Map(
       ALL_TIME_PRIORITY_TITLES.map((title, idx) => [title.toLowerCase(), idx])
     );
@@ -245,17 +270,23 @@ export default function App() {
       })
       .slice(0, 100);
 
-    // 2. MINI-SERIES VERIFICADAS (Solo 1 temporada, estado "Ended" y entre 2 y 12 episodios fijos)
     const miniSeries = allShows
       .filter((s) => isVerifiedMiniseries(s))
       .sort((a, b) => (b.rating?.average || 0) - (a.rating?.average || 0));
 
-    // 3. Series Trending
     const trending = [...allShows]
       .sort((a, b) => (b.weight || 0) - (a.weight || 0))
       .slice(0, 25);
 
-    // 4. Por Géneros
+    const friendsShows = [...allShows]
+      .filter((s) => s.rating?.average >= 8.2)
+      .slice(0, 12);
+
+    const friendsMap = {};
+    friendsShows.forEach((show, idx) => {
+      friendsMap[show.id] = FRIENDS_ACTIVITY_POOL[idx % FRIENDS_ACTIVITY_POOL.length];
+    });
+
     const byGenre = (genreNames) =>
       allShows
         .filter((s) => s.genres?.some((g) => genreNames.includes(g)))
@@ -266,6 +297,8 @@ export default function App() {
       top100,
       miniSeries,
       trending,
+      friendsShows,
+      friendsMap,
       horror: byGenre(["Horror", "Supernatural"]),
       comedy: byGenre(["Comedy"]),
       drama: byGenre(["Drama"]),
@@ -284,13 +317,17 @@ export default function App() {
     catalogSectionRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const openQuickCard = (show) => {
+    setQuickModalShow(show);
+  };
+
   const openShowDetail = async (show) => {
+    setQuickModalShow(null);
     setSelectedShow(show);
     setActiveSeason(1);
     setView("detail");
     window.scrollTo({ top: 0, behavior: "smooth" });
 
-    // Si la serie ya trae sus episodios verificados en _embedded, los usamos al instante
     if (show._embedded?.episodes) {
       setEpisodes(show._embedded.episodes);
       return;
@@ -307,30 +344,78 @@ export default function App() {
   };
 
   const openSavedShowById = async (showId) => {
+    const foundLocal = allShows.find((s) => String(s.id) === String(showId));
+    if (foundLocal) {
+      openQuickCard(foundLocal);
+      return;
+    }
     try {
       const res = await fetch(`https://api.tvmaze.com/shows/${showId}`);
       const showData = await res.json();
-      openShowDetail(showData);
+      openQuickCard(showData);
     } catch (err) {
       console.error("No se pudo abrir la serie guardada:", err);
     }
   };
 
-  const handleSetGeneralScore = (show, rawValue) => {
-    const score = Math.min(100, Math.max(1, Number(rawValue)));
+  // Guardar estados rápidos (Watched, Like, Watchlist)
+  const handleToggleShowFlag = (show, flag) => {
+    const current = ratings[show.id] || {};
+    const nextValue = !current[flag];
+
     const entry = {
-      ...(ratings[show.id] || {}),
+      ...current,
       showId: show.id,
       showName: show.name,
       poster: show.image?.medium || "",
-      generalScore: score,
-      episodes: ratings[show.id]?.episodes || {},
+      genres: show.genres || [],
+      episodes: current.episodes || {},
+      [flag]: nextValue,
     };
 
     setRatings((prev) => ({ ...prev, [show.id]: entry }));
-    saveShowRatingToFirebase(USER_ID, show.id, entry);
+    saveShowRatingToFirebase(currentUserId, show.id, entry);
   };
 
+  // Guardar Puntuación General (1-100)
+  const handleSetGeneralScore = (show, rawValue) => {
+    const score = Math.min(100, Math.max(1, Number(rawValue)));
+    const current = ratings[show.id] || {};
+    const entry = {
+      ...current,
+      showId: show.id,
+      showName: show.name,
+      poster: show.image?.medium || "",
+      genres: show.genres || [],
+      generalScore: score,
+      watched: true,
+      episodes: current.episodes || {},
+    };
+
+    setRatings((prev) => ({ ...prev, [show.id]: entry }));
+    saveShowRatingToFirebase(currentUserId, show.id, entry);
+  };
+
+  // Guardar Reseña y Puntuación General desde la vista de detalle
+  const handleSaveReviewAndScore = (show, reviewText) => {
+    const current = ratings[show.id] || {};
+    const entry = {
+      ...current,
+      showId: show.id,
+      showName: show.name,
+      poster: show.image?.medium || "",
+      genres: show.genres || [],
+      review: reviewText,
+      generalScore: current.generalScore || null,
+      watched: true,
+      episodes: current.episodes || {},
+    };
+
+    setRatings((prev) => ({ ...prev, [show.id]: entry }));
+    saveShowRatingToFirebase(currentUserId, show.id, entry);
+  };
+
+  // Guardar puntaje de capítulo individual (1-100)
   const handleSetEpisodeData = (show, ep, field, value) => {
     const currentEp = ratings[show.id]?.episodes?.[ep.id] || {};
     const updatedEp = {
@@ -352,6 +437,7 @@ export default function App() {
       showId: show.id,
       showName: show.name,
       poster: show.image?.medium || "",
+      genres: show.genres || [],
       generalScore: ratings[show.id]?.generalScore || null,
       episodes: {
         ...(ratings[show.id]?.episodes || {}),
@@ -360,11 +446,12 @@ export default function App() {
     };
 
     setRatings((prev) => ({ ...prev, [show.id]: entry }));
-    saveShowRatingToFirebase(USER_ID, show.id, entry);
+    saveShowRatingToFirebase(currentUserId, show.id, entry);
   };
 
   return (
     <div>
+      {/* BARRA SUPERIOR + BOTÓN DE LOGIN / PERFIL */}
       <Navbar
         view={view}
         setView={setView}
@@ -373,11 +460,14 @@ export default function App() {
         ratedCount={Object.keys(ratings).length}
         trendingShows={categories.trending.slice(0, 3)}
         ratings={ratings}
-        onSelectShow={openShowDetail}
+        onSelectShow={openQuickCard}
         onLiveResultsChange={(liveShows) => {
           setSearchResults(liveShows);
           setView("catalog");
         }}
+        user={user}                                    // <-- Pasamos el usuario
+        onLoginClick={() => setShowAuthModal(true)}    // <-- Abrimos el modal de Auth
+        onLogout={() => logoutUser()}                  // <-- Cerramos sesión en Firebase
       />
 
       {view === "catalog" && searchQuery.trim() === "" && (
@@ -385,7 +475,7 @@ export default function App() {
           show={featuredShow || categories.trending[0]}
           userRating={ratings[featuredShow?.id]?.generalScore}
           episodeAverage={calculateEpisodeAverage(ratings[featuredShow?.id])}
-          onOpenDetail={openShowDetail}
+          onOpenDetail={openQuickCard}
           onScrollToCatalog={scrollToCatalog}
         />
       )}
@@ -403,7 +493,7 @@ export default function App() {
                 <ShowGrid
                   shows={searchResults}
                   ratings={ratings}
-                  onSelectShow={openShowDetail}
+                  onSelectShow={openQuickCard}
                 />
               </>
             ) : (
@@ -413,8 +503,17 @@ export default function App() {
                   subtitle="Ranking histórico de excelencia televisiva • Desliza para ver las 100"
                   shows={categories.top100}
                   ratings={ratings}
-                  onSelectShow={openShowDetail}
+                  onSelectShow={openQuickCard}
                   showRank={true}
+                />
+
+                <CategoryCarousel
+                  title="New from friends"
+                  subtitle="Series recientes vistas por tus amigos con valoraciones altas"
+                  shows={categories.friendsShows}
+                  ratings={ratings}
+                  onSelectShow={openQuickCard}
+                  friendsMap={categories.friendsMap}
                 />
 
                 <CategoryCarousel
@@ -422,7 +521,7 @@ export default function App() {
                   subtitle="Producciones cerradas verificadas de entre 2 y 12 episodios"
                   shows={categories.miniSeries}
                   ratings={ratings}
-                  onSelectShow={openShowDetail}
+                  onSelectShow={openQuickCard}
                   ribbonText="Mini-serie"
                 />
 
@@ -431,7 +530,7 @@ export default function App() {
                   subtitle="Las series más vistas y comentadas del momento"
                   shows={categories.trending}
                   ratings={ratings}
-                  onSelectShow={openShowDetail}
+                  onSelectShow={openQuickCard}
                   ribbonText="En tendencia"
                 />
 
@@ -439,42 +538,42 @@ export default function App() {
                   title="Terror y misterio sobrenatural"
                   shows={categories.horror}
                   ratings={ratings}
-                  onSelectShow={openShowDetail}
+                  onSelectShow={openQuickCard}
                 />
 
                 <CategoryCarousel
                   title="Series de comedia imprescindibles"
                   shows={categories.comedy}
                   ratings={ratings}
-                  onSelectShow={openShowDetail}
+                  onSelectShow={openQuickCard}
                 />
 
                 <CategoryCarousel
                   title="Animes y animación de culto"
                   shows={categories.anime}
                   ratings={ratings}
-                  onSelectShow={openShowDetail}
+                  onSelectShow={openQuickCard}
                 />
 
                 <CategoryCarousel
                   title="Ciencia ficción y mundos fantásticos"
                   shows={categories.scifi}
                   ratings={ratings}
-                  onSelectShow={openShowDetail}
+                  onSelectShow={openQuickCard}
                 />
 
                 <CategoryCarousel
                   title="Crimen, suspenso e investigación"
                   shows={categories.crime}
                   ratings={ratings}
-                  onSelectShow={openShowDetail}
+                  onSelectShow={openQuickCard}
                 />
 
                 <CategoryCarousel
                   title="Dramas aclamados"
                   shows={categories.drama}
                   ratings={ratings}
-                  onSelectShow={openShowDetail}
+                  onSelectShow={openQuickCard}
                 />
               </div>
             )}
@@ -490,6 +589,7 @@ export default function App() {
             showRatings={ratings[selectedShow.id]}
             onBack={() => setView("catalog")}
             onSetGeneralScore={handleSetGeneralScore}
+            onSaveReviewAndScore={handleSaveReviewAndScore}
             onSetEpisodeData={handleSetEpisodeData}
           />
         )}
@@ -501,6 +601,26 @@ export default function App() {
           />
         )}
       </main>
+
+      <Footer />
+
+      {/* TARJETA RÁPIDA INTERACTIVA */}
+      {quickModalShow && (
+        <QuickShowModal
+          initialShow={quickModalShow}
+          allShows={allShows}
+          ratings={ratings}
+          onClose={() => setQuickModalShow(null)}
+          onToggleFlag={handleToggleShowFlag}
+          onSetGeneralScore={handleSetGeneralScore}
+          onOpenFullDetail={openShowDetail}
+        />
+      )}
+
+      {/* MODAL DE AUTENTICACIÓN FIREBASE */}
+      {showAuthModal && (
+        <AuthModal onClose={() => setShowAuthModal(false)} />
+      )}
     </div>
   );
 }

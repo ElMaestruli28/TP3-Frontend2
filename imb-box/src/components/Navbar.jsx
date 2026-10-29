@@ -11,6 +11,9 @@ export default function Navbar({
   ratings,
   onSelectShow,
   onLiveResultsChange,
+  user,          // <-- Recibimos el usuario
+  onLoginClick,  // <-- Función para abrir el modal de login
+  onLogout,      // <-- Función para cerrar sesión
 }) {
   return (
     <header className="ep-navbar">
@@ -44,6 +47,20 @@ export default function Navbar({
         onSelectShow={onSelectShow}
         onLiveResultsChange={onLiveResultsChange}
       />
+
+      {/* BOTÓN DE USUARIO / LOGIN EN EL NAVBAR */}
+      <div className="ep-nav-auth-section">
+        {user ? (
+          <div className="ep-nav-user-info">
+            <span className="ep-nav-username">👤 {user.email?.split("@")[0] || "Usuario"}</span>
+            <button className="ep-nav-btn logout" onClick={onLogout}>Salir</button>
+          </div>
+        ) : (
+          <button className="ep-btn-primary-light" onClick={onLoginClick}>
+            Iniciar Sesión
+          </button>
+        )}
+      </div>
     </header>
   );
 }

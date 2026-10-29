@@ -7,6 +7,7 @@ export default function ShowCard({
   onSelect,
   rankNumber = null,
   ribbonText = null,
+  friendActivity = null, // { friendName, friendAvatar, friendScore }
 }) {
   const general = showRating?.generalScore;
   const avg = calculateEpisodeAverage(showRating);
@@ -18,7 +19,6 @@ export default function ShowCard({
 
   const badgeMeta = getScoreMeta(userScore);
 
-  // Si tiene episodios embebidos y es una Mini-serie, mostramos la cantidad fija de capítulos
   const totalFixedEpisodes = show._embedded?.episodes?.length;
   const finalRibbonText =
     ribbonText === "Mini-serie" && totalFixedEpisodes
@@ -63,14 +63,34 @@ export default function ShowCard({
         {finalRibbonText && (
           <span className="ep-bottom-ribbon">{finalRibbonText}</span>
         )}
+
+        {/* Avatar y miniatura de actividad de amigo en la esquina inferior izquierda */}
+        {friendActivity && (
+          <div className="ep-friend-avatar-badge" title={`Calificado por ${friendActivity.friendName}`}>
+            <img src={friendActivity.friendAvatar} alt={friendActivity.friendName} />
+          </div>
+        )}
       </div>
 
       <div className="ep-poster-meta">
         <div className="ep-poster-title">{show.name || show.showName}</div>
-        <div className="ep-poster-sub">
-          <span>GRAL: {general ?? "—"}</span>
-          <span>CAPS: {avg ?? "—"}</span>
-        </div>
+        
+        {friendActivity ? (
+          <div className="ep-friend-meta-row">
+            <span className="ep-friend-name">{friendActivity.friendName}</span>
+            <span className="ep-friend-stars">
+              {"★".repeat(Math.round(friendActivity.friendScore / 20))}
+              <span style={{ opacity: 0.3 }}>
+                {"★".repeat(5 - Math.round(friendActivity.friendScore / 20))}
+              </span>
+            </span>
+          </div>
+        ) : (
+          <div className="ep-poster-sub">
+            <span>GRAL: {general ?? "—"}</span>
+            <span>CAPS: {avg ?? "—"}</span>
+          </div>
+        )}
       </div>
     </article>
   );
