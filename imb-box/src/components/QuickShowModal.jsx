@@ -9,18 +9,18 @@ import {
 
 export default function QuickShowModal({
   initialShow,
-  allShows,
-  ratings,
+  allShows = [],
+  ratings = {},
+  contextShows = [], // <-- NUEVA PROP
   onClose,
   onToggleFlag,
   onSetGeneralScore,
   onOpenFullDetail,
 }) {
   // Construimos el mazo deslizable una sola vez al abrir la tarjeta
-  const deck = useMemo(
-    () => buildRecommendedDeck(initialShow, allShows, ratings),
-    [initialShow, allShows]
-  );
+  const deck = useMemo(() => {
+    return buildRecommendedDeck(initialShow, allShows, ratings, contextShows);
+  }, [initialShow, allShows, ratings, contextShows]);
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [showRateSlider, setShowRateSlider] = useState(false);
@@ -28,24 +28,21 @@ export default function QuickShowModal({
 
   if (!initialShow || deck.length === 0) return null;
 
-  const currentShow = deck[activeIndex] || initialShow;
-  const currentRating = ratings[currentShow.id] || {};
 
-  const isWatched = Boolean(currentRating.watched);
-  const isLiked = Boolean(currentRating.liked);
-  const isInWatchlist = Boolean(currentRating.watchlist);
-  const generalScore = currentRating.generalScore;
+  const currentShow = deck[activeIndex];
+  const currentRating = ratings[currentShow.id];
+  const isWatched = Boolean(currentRating?.watched);
+  const isLiked = Boolean(currentRating?.liked);
+  const isInWatchlist = Boolean(currentRating?.watchlist);
+  const generalScore = currentRating?.generalScore;
+  
+  const totalLikes = getShowLikesCount(currentShow, currentRating);
+  const year = currentShow.premiered ? currentShow.premiered.slice(0, 4) : "Serie";
+  const posterUrl = currentShow.image?.original || currentShow.image?.medium || "https://via.placeholder.com/400x600/12141c/9499ad?text=EPISODIA";
+
   const epAverage = calculateEpisodeAverage(currentRating);
   const scoreMeta = getScoreMeta(generalScore);
 
-  const totalLikes = getShowLikesCount(currentShow, currentRating);
-  const year = currentShow.premiered
-    ? currentShow.premiered.slice(0, 4)
-    : "Serie";
-  const posterUrl =
-    currentShow.image?.original ||
-    currentShow.image?.medium ||
-    "https://via.placeholder.com/400x600/12141c/9499ad?text=EPISODIA";
 
   // Detecta qué póster está centrado cuando el usuario desliza con el dedo
   const handleTrackScroll = () => {
@@ -83,6 +80,18 @@ export default function QuickShowModal({
     });
   };
 
+  let recLabel = "";
+  if (activeIndex > 0) {
+    const isFromContext = contextShows.some(s => String(s.id) === String(currentShow.id));
+    if (isFromContext) {
+      recLabel = "Misma categoría";
+    } else {
+      const sharesTopic = currentShow.genres?.some(g => initialShow.genres?.includes(g));
+      const bothMini = isVerifiedMiniseries(initialShow) && isVerifiedMiniseries(currentShow);
+      recLabel = bothMini ? "Recomendada: Mini-serie" : sharesTopic ? "Recomendada: Mismo tópico" : "Top Likes globales";
+    }
+  }
+
   return (
     <div className="ep-qmodal-overlay" onClick={onClose}>
       {/* Fondo ambiental difuminado con los colores del póster actual */}
@@ -107,7 +116,7 @@ export default function QuickShowModal({
                 ♥ {totalLikes.toLocaleString()} likes
               </span>
               {activeIndex > 0 && (
-                <span className="ep-qmodal-rec-pill">Recomendada por likes</span>
+                <span className="ep-qmodal-rec-pill">{recLabel}</span>
               )}
             </div>
           </div>

@@ -9,7 +9,7 @@ export default function ShowGrid({ shows, ratings, onSelectShow }) {
           key={show.id}
           show={show}
           showRating={ratings[show.id]}
-          onSelect={onSelectShow}
+          onSelect={onSelectShow(s, shows)}
         />
       ))}
     </div>

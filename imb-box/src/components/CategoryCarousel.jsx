@@ -59,7 +59,7 @@ export default function CategoryCarousel({
             <ShowCard
               show={show}
               showRating={ratings[show.id]}
-              onSelect={onSelectShow}
+              onSelect={(s) => onSelectShow(s, shows)} /* <-- AHORA ENVÍA LA LISTA COMPLETA */
               rankNumber={showRank ? idx + 1 : null}
               ribbonText={ribbonText}
               friendActivity={friendsMap[show.id] || null}

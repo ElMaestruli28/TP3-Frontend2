@@ -120,7 +120,7 @@ export default function ShowDetail({
             <div className="ep-review-header-row">
               <span className="ep-score-label">Reseña o Crítica General de la Serie</span>
               {savedMessage && (
-                <span className="ep-review-saved-badge">✓ Guardado en Firebase</span>
+                <span className="ep-review-saved-badge">✓ Guardado</span>
               )}
             </div>
 

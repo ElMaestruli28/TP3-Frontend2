@@ -78,41 +78,40 @@ export function getShowLikesCount(show, showRating) {
  * - Siguientes posiciones: Series recomendadas según géneros afines (de la serie actual
  *   y de las series a las que el usuario dio "Like"), ordenadas de mayor a menor cantidad de Likes.
  */
-export function buildRecommendedDeck(initialShow, allShows = [], ratings = {}) {
+// src/utils/scoreHelpers.js (al final del archivo)
+export function buildRecommendedDeck(initialShow, allShows = [], ratings = {}, contextShows = []) {
   if (!initialShow) return [];
 
-  // Recolectar géneros favoritos (de la serie abierta + series con Like del usuario)
-  const preferredGenres = new Set(initialShow.genres || []);
-  Object.values(ratings).forEach((entry) => {
-    if (entry.liked && Array.isArray(entry.genres)) {
-      entry.genres.forEach((g) => preferredGenres.add(g));
-    }
-  });
+  // 1. Prioridad absoluta: Las series del mismo carrusel desde el que se abrió
+  const contextOthers = (contextShows || []).filter(s => s.id !== initialShow.id);
+  const contextIds = new Set(contextOthers.map(s => s.id));
+  contextIds.add(initialShow.id);
 
-  const others = allShows.filter((s) => s.id !== initialShow.id);
+  // 2. Resto del catálogo para rellenar
+  const generalOthers = allShows.filter(s => !contextIds.has(s.id));
+  const targetGenres = initialShow.genres || [];
+  const isInitialMini = isVerifiedMiniseries(initialShow);
 
-  const scoredCandidates = others.map((candidate) => {
+  const scoredGeneral = generalOthers.map((candidate) => {
     const likes = getShowLikesCount(candidate, ratings[candidate.id]);
-    const matchingGenres = (candidate.genres || []).filter((g) =>
-      preferredGenres.has(g)
-    ).length;
+    const sharesTopic = (candidate.genres || []).some((g) => targetGenres.includes(g));
+    const bothMini = isInitialMini && isVerifiedMiniseries(candidate);
 
-    return {
-      show: candidate,
-      likes,
-      matchingGenres,
-    };
+    return { show: candidate, likes, sharesTopic, bothMini };
   });
 
-  // Ordenar: primero las que comparten género con tus gustos y luego por mayor cantidad de Likes
-  scoredCandidates.sort((a, b) => {
-    if (b.matchingGenres > 0 && a.matchingGenres === 0) return 1;
-    if (a.matchingGenres > 0 && b.matchingGenres === 0) return -1;
-    return b.likes - a.likes;
+  // Orden estricto para el relleno: Miniseries > Mismo género > Likes
+  scoredGeneral.sort((a, b) => {
+    if (a.bothMini && !b.bothMini) return -1;
+    if (!a.bothMini && b.bothMini) return 1;
+    if (a.sharesTopic && !b.sharesTopic) return -1;
+    if (!a.sharesTopic && b.sharesTopic) return 1;
+    return b.likes - a.likes; 
   });
 
   return [
     initialShow,
-    ...scoredCandidates.slice(0, 18).map((item) => item.show),
-  ];
+    ...contextOthers,
+    ...scoredGeneral.map(item => item.show)
+  ].slice(0, 20); // Límite de 20 tarjetas para rendimiento óptimo
 }

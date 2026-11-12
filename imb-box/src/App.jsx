@@ -120,6 +120,7 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const [quickModalShow, setQuickModalShow] = useState(null);
+  const [quickModalContext, setQuickModalContext] = useState([]);
   const [selectedShow, setSelectedShow] = useState(null);
   const [episodes, setEpisodes] = useState([]);
   const [activeSeason, setActiveSeason] = useState(1);
@@ -320,8 +321,9 @@ export default function App() {
     catalogSectionRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const openQuickCard = (show) => {
+  const openQuickCard = (show, contextList = []) => {
     setQuickModalShow(show);
+    setQuickModalContext(contextList);
   };
 
   const openShowDetail = async (show) => {
@@ -619,6 +621,7 @@ export default function App() {
           initialShow={quickModalShow}
           allShows={allShows}
           ratings={ratings}
+          contextShows={quickModalContext} /* <-- PASAMOS EL CONTEXTO */
           onClose={() => setQuickModalShow(null)}
           onToggleFlag={handleToggleShowFlag}
           onSetGeneralScore={handleSetGeneralScore}
