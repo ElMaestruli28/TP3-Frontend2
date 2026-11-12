@@ -140,13 +140,18 @@ export default function App() {
         const cloudData = await fetchUserRatingsFromFirebase(currentUser.uid);
         if (cloudData && Object.keys(cloudData).length > 0) {
           setRatings(cloudData);
+        } else {
+          setRatings({}); // Si es un anónimo nuevo, su lista arranca vacía
         }
+      } else {
+        // CUANDO CIERRA SESIÓN O NO ESTÁ LOGUEADO: Borrar todo rastro
+        setRatings({});
+        localStorage.removeItem("episodia_v3_data");
       }
     });
     return () => unsubscribe();
   }, []);
 
-  const currentUserId = user ? user.uid : "invitado_local";
 
   // 2. Cargar catálogo de TVMaze y series clave con sus episodios
   useEffect(() => {
@@ -365,6 +370,8 @@ export default function App() {
 
   // Guardar estados rápidos (Watched, Like, Watchlist)
   const handleToggleShowFlag = (show, flag) => {
+    if (!user) return setShowAuthModal(true); // Bloquea si no hay sesión
+
     const current = ratings[show.id] || {};
     const nextValue = !current[flag];
 
@@ -379,11 +386,12 @@ export default function App() {
     };
 
     setRatings((prev) => ({ ...prev, [show.id]: entry }));
-    saveShowRatingToFirebase(currentUserId, show.id, entry);
+    saveShowRatingToFirebase(user.uid, show.id, entry);
   };
 
-  // Guardar Puntuación General (1-100)
   const handleSetGeneralScore = (show, rawValue) => {
+    if (!user) return setShowAuthModal(true); // Bloquea si no hay sesión
+
     const score = Math.min(100, Math.max(1, Number(rawValue)));
     const current = ratings[show.id] || {};
     const entry = {
@@ -398,11 +406,12 @@ export default function App() {
     };
 
     setRatings((prev) => ({ ...prev, [show.id]: entry }));
-    saveShowRatingToFirebase(currentUserId, show.id, entry);
+    saveShowRatingToFirebase(user.uid, show.id, entry);
   };
 
-  // Guardar Reseña y Puntuación General desde la vista de detalle
   const handleSaveReviewAndScore = (show, reviewText) => {
+    if (!user) return setShowAuthModal(true); // Bloquea si no hay sesión
+
     const current = ratings[show.id] || {};
     const entry = {
       ...current,
@@ -417,23 +426,20 @@ export default function App() {
     };
 
     setRatings((prev) => ({ ...prev, [show.id]: entry }));
-    saveShowRatingToFirebase(currentUserId, show.id, entry);
+    saveShowRatingToFirebase(user.uid, show.id, entry);
   };
 
-  // Guardar puntaje de capítulo individual (1-100)
   const handleSetEpisodeData = (show, ep, field, value) => {
+    if (!user) return setShowAuthModal(true); // Bloquea si no hay sesión
+
     const currentEp = ratings[show.id]?.episodes?.[ep.id] || {};
     const updatedEp = {
       ...currentEp,
-      code: `S${String(ep.season).padStart(2, "0")}E${String(
-        ep.number
-      ).padStart(2, "0")}`,
+      code: `S${String(ep.season).padStart(2, "0")}E${String(ep.number).padStart(2, "0")}`,
       name: ep.name,
       [field]:
         field === "score"
-          ? value === ""
-            ? null
-            : Math.min(100, Math.max(1, Number(value)))
+          ? value === "" ? null : Math.min(100, Math.max(1, Number(value)))
           : value,
     };
 
@@ -451,7 +457,7 @@ export default function App() {
     };
 
     setRatings((prev) => ({ ...prev, [show.id]: entry }));
-    saveShowRatingToFirebase(currentUserId, show.id, entry);
+    saveShowRatingToFirebase(user.uid, show.id, entry);
   };
 
   return (
