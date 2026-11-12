@@ -2537,3 +2537,238 @@ body {
 .ep-nav-btn.logout:hover {
   background: rgba(239, 68, 68, 0.3);
 }
+
+/* ==========================================================================
+   SECCIÓN "POPULAR REVIEWS THIS WEEK" (ESTILO LETTERBOXD)
+   ========================================================================== */
+
+.ep-pop-reviews-section {
+  width: 100%;
+  margin: 12px 0 20px;
+}
+
+.ep-pop-reviews-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(154, 170, 189, 0.25);
+  padding-bottom: 8px;
+  margin-bottom: 22px;
+}
+
+.ep-pop-reviews-kicker {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: #9ab;
+  text-transform: uppercase;
+}
+
+.ep-pop-reviews-more {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #678;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.ep-pop-reviews-more:hover {
+  color: #ffffff;
+}
+
+/* Mobile-First: 1 columna en móvil */
+.ep-pop-reviews-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+}
+
+.ep-pop-review-card {
+  padding-bottom: 22px;
+  border-bottom: 1px solid rgba(154, 170, 189, 0.14);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ep-pop-review-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.ep-pop-review-poster {
+  width: 74px;
+  height: 110px;
+  flex-shrink: 0;
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  cursor: pointer;
+  background: #12141c;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.ep-pop-review-poster:hover {
+  transform: scale(1.04);
+  border-color: #00e054;
+}
+
+.ep-pop-review-poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ep-pop-review-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.ep-pop-review-author {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ep-pop-review-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.ep-pop-review-username {
+  font-size: 13px;
+  font-weight: 700;
+  color: #abc;
+}
+
+.ep-pop-review-title-line {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.ep-pop-review-show-title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.15;
+}
+
+.ep-pop-review-title-line:hover .ep-pop-review-show-title {
+  color: var(--crimson);
+}
+
+.ep-pop-review-year {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 400;
+  color: #89a;
+}
+
+.ep-pop-review-rating-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.ep-pop-green-stars {
+  color: #00e054;
+  font-size: 15px;
+  letter-spacing: 1px;
+}
+
+.ep-pop-numeric-pill {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gold);
+  background: rgba(255, 184, 0, 0.12);
+  border: 1px solid rgba(255, 184, 0, 0.3);
+  padding: 1px 6px;
+  border-radius: 5px;
+}
+
+.ep-pop-orange-heart {
+  color: #ff9010;
+  font-size: 14px;
+}
+
+.ep-pop-comments-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #789;
+}
+
+.ep-pop-comment-svg {
+  width: 12px;
+  height: 12px;
+}
+
+.ep-pop-review-body {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #9ab;
+}
+
+.ep-pop-review-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.ep-pop-like-btn {
+  background: transparent;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #789;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.ep-pop-like-btn:hover {
+  color: #cbd5e1;
+}
+
+.ep-pop-like-btn.liked {
+  color: #ff9010;
+}
+
+.ep-pop-like-heart {
+  font-size: 13px;
+}
+
+.ep-pop-like-count {
+  font-size: 12px;
+  color: #678;
+}
+
+/* En Tablet y PC: 2 columnas simétricas como en la imagen de referencia */
+@media (min-width: 768px) {
+  .ep-pop-reviews-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 48px;
+    row-gap: 32px;
+  }
+}

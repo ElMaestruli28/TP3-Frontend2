@@ -21,7 +21,10 @@ import QuickShowModal from "./components/QuickShowModal";
 import AuthModal from "./components/AuthModal";
 import Footer from "./components/Footer";
 import "./App.css";
+import PopularReviews from "./components/PopularReviews";
 
+// App.jsx (Fragmento)
+  const currentUserId = user ? user.uid : "invitado_local";
 // Ranking histórico de referencia ("Ranking The Best TV Shows of All Time")
 const ALL_TIME_PRIORITY_TITLES = [
   "Breaking Bad",
@@ -514,6 +517,12 @@ export default function App() {
                   ratings={ratings}
                   onSelectShow={openQuickCard}
                   friendsMap={categories.friendsMap}
+                />
+                <PopularReviews
+                  allShows={allShows}
+                  ratings={ratings}
+                  currentUser={user}
+                  onSelectShow={openQuickCard}
                 />
 
                 <CategoryCarousel

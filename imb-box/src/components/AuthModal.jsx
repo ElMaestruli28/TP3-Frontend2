@@ -13,7 +13,6 @@ export default function AuthModal({ onClose }) {
     e.preventDefault();
     setError(null);
     setLoading(true);
-
     try {
       if (isRegister) {
         await registerWithEmail(email, password);
@@ -28,12 +27,14 @@ export default function AuthModal({ onClose }) {
     }
   };
 
+  // Función que conecta con Firebase de forma anónima
   const handleAnonymous = async () => {
+    setError(null);
     try {
       await loginAnonymously();
-      onClose();
+      onClose(); // Cierra el modal, App.jsx detectará el cambio de estado solo
     } catch (err) {
-      setError(err.message);
+      setError("Error al entrar como invitado: " + err.message);
     }
   };
 
@@ -86,6 +87,7 @@ export default function AuthModal({ onClose }) {
 
           <div className="ep-auth-divider">o</div>
 
+          {/* Botón conectado a Firebase Anónimo */}
           <button
             type="button"
             className="ep-btn-secondary-glass"
