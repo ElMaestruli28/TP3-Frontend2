@@ -23,8 +23,7 @@ import Footer from "./components/Footer";
 import "./App.css";
 import PopularReviews from "./components/PopularReviews";
 
-// App.jsx (Fragmento)
-  const currentUserId = user ? user.uid : "invitado_local";
+
 // Ranking histórico de referencia ("Ranking The Best TV Shows of All Time")
 const ALL_TIME_PRIORITY_TITLES = [
   "Breaking Bad",
@@ -110,6 +109,7 @@ const FRIENDS_ACTIVITY_POOL = [
 ];
 
 export default function App() {
+  // App.jsx (Fragmento)
   const [user, setUser] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
