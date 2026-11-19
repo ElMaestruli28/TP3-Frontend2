@@ -33,6 +33,7 @@ export default function SearchBar({
 
     if (!trimmed) {
       setLiveResults([]);
+      if (onLiveResultsChange) onLiveResultsChange([]);
       setIsLoading(false);
       return;
     }
@@ -44,9 +45,12 @@ export default function SearchBar({
           `https://api.tvmaze.com/search/shows?q=${encodeURIComponent(trimmed)}`
         );
         const data = await res.json();
-        const mappedShows = data.map((item) => item.show);
+        const mappedShows = data
+          .map((item) => item?.show)
+          .filter(Boolean);
+
         setLiveResults(mappedShows.slice(0, 6));
-        // También actualiza la grilla de pósters principal si deseas ver todos los resultados
+
         if (onLiveResultsChange) {
           onLiveResultsChange(mappedShows);
         }
@@ -63,17 +67,20 @@ export default function SearchBar({
   const handleClear = () => {
     setSearchQuery("");
     setLiveResults([]);
+    if (onLiveResultsChange) onLiveResultsChange([]);
     inputRef.current?.focus();
   };
 
   const handleCancel = () => {
     setSearchQuery("");
+    setLiveResults([]);
+    if (onLiveResultsChange) onLiveResultsChange([]);
     setIsFocused(false);
   };
 
-  const handlePickShow = (show) => {
+  const handlePickShow = (show, contextList = []) => {
     setIsFocused(false);
-    onSelectShow(show);
+    onSelectShow(show, contextList);
   };
 
   return (
@@ -131,7 +138,7 @@ export default function SearchBar({
                     <div
                       key={show.id}
                       className="ep-trending-item"
-                      onClick={() => handlePickShow(show)}
+                      onClick={() => handlePickShow(show, trendingShows)}
                     >
                       <div className="ep-trending-thumb-wrap">
                         <img
@@ -195,7 +202,7 @@ export default function SearchBar({
                       <div
                         key={show.id}
                         className="ep-live-result-card"
-                        onClick={() => handlePickShow(show)}
+                        onClick={() => handlePickShow(show, liveResults)}
                       >
                         <div className="ep-live-result-thumb">
                           <img
