@@ -1,16 +1,26 @@
-# React + Vite
+# IMB-BOX
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Aplicación web de seguimiento, calificación y reseña de series de televisión desarrollada con **React**, **Vite** y **Firebase**, consumiendo el catálogo y la información episódica desde la **API de TVMaze**.
 
-Currently, two official plugins are available:
+Permite explorar el catálogo libremente, evaluar series con escala del **1 al 100** (puntaje general y por episodio), escribir reseñas, descubrir recomendaciones por contexto/tópico y persistir los datos de cada usuario en **Cloud Firestore** (incluyendo acceso como invitado anónimo).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## Requisitos previos
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Antes de empezar, asegúrate de tener instalado en tu equipo:
 
-## Expanding the Oxlint configuration
+* **Node.js** (versión 18 o superior recomendada).
+* **Git** (para clonar el repositorio).
+* Una cuenta de **Firebase** ([console.firebase.google.com](https://console.firebase.google.com/)).
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+---
+
+## 1. Clonar el repositorio e instalar dependencias
+
+Abre una terminal y ejecuta:
+
+```bash
+git clone <URL_DE_TU_REPOSITORIO_EN_GITHUB>
+cd <CARPETA_DEL_PROYECTO>
+npm install
