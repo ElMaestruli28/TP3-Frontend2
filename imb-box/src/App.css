@@ -3431,3 +3431,39 @@ body {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* ==========================================================================
+   FIX GRILLA DE RESULTADOS DE BÚSQUEDA Y POSICIÓN DEL DROPDOWN
+   ========================================================================== */
+
+.ep-shows-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (min-width: 768px) {
+  .ep-shows-grid {
+    grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+    gap: 18px;
+  }
+
+  /* Alinea el desplegable directamente debajo de la barra de búsqueda */
+  .ep-search-dropdown {
+    left: 0;
+    right: auto;
+    width: 100%;
+    min-width: 440px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ep-shows-grid {
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 24px;
+  }
+
+  .ep-search-dropdown {
+    min-width: 480px;
+  }
+}

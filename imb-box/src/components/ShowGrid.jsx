@@ -11,7 +11,7 @@ export default function ShowGrid({ shows = [], ratings = {}, onSelectShow }) {
   }
 
   return (
-    <div className="ep-shows-grid">
+    <div className="ep-poster-grid">
       {shows.map((show) => (
         <ShowCard
           key={show.id}
