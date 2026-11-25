@@ -42,7 +42,7 @@ export default function AuthModal({ onClose }) {
     <div className="ep-qmodal-overlay" onClick={onClose}>
       <div className="ep-auth-modal" onClick={(e) => e.stopPropagation()}>
         <div className="ep-auth-header">
-          <h2>{isRegister ? "Crear cuenta en Episodia" : "Iniciar Sesión"}</h2>
+          <h2>{isRegister ? "Crear cuenta en IMB-BOX" : "Iniciar Sesión"}</h2>
           <button className="ep-qmodal-close-btn" onClick={onClose}>✕</button>
         </div>
 
@@ -87,13 +87,13 @@ export default function AuthModal({ onClose }) {
 
           <div className="ep-auth-divider">o</div>
 
-          {/* Botón conectado a Firebase Anónimo */}
           <button
             type="button"
-            className="ep-btn-secondary-glass"
+            className="ep-auth-guest-btn"
+            disabled={loading}
             onClick={handleAnonymous}
           >
-            Entrar como invitado (Anónimo)
+            {loading ? "Conectando..." : "Entrar como invitado (Anónimo)"}
           </button>
         </div>
       </div>

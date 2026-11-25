@@ -26,7 +26,7 @@ export default function ListStackCard({ list, onSelectList, onToggleLikeList }) 
                 src={
                   show.image?.medium ||
                   show.poster ||
-                  "https://via.placeholder.com/240x360/12141c/9499ad?text=EPISODIA"
+                  "https://via.placeholder.com/240x360/12141c/9499ad?text=IMB-BOX"
                 }
                 alt={show.name || show.showName}
                 loading="lazy"

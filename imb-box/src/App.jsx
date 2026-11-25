@@ -12,6 +12,7 @@ import {
   isVerifiedMiniseries,
 } from "./utilidades/scoreHelpers";
 import Navbar from "./components/Navbar";
+import TopTenWeekly from "./components/TopTenWeekly";
 import HeroSpotlight from "./components/HeroSpotlight";
 import CategoryCarousel from "./components/CategoryCarousel";
 import ShowGrid from "./components/ShowGrid";
@@ -483,11 +484,15 @@ export default function App() {
 
       {view === "catalog" && searchQuery.trim() === "" && (
         <HeroSpotlight
-          show={featuredShow || categories.trending[0]}
-          userRating={ratings[featuredShow?.id]?.generalScore}
-          episodeAverage={calculateEpisodeAverage(ratings[featuredShow?.id])}
-          onOpenDetail={openQuickCard}
-          onScrollToCatalog={scrollToCatalog}
+          shows={allShows}
+          ratings={ratings}
+          onOpenDetail={(show) => openQuickCard(show, allShows)}
+          onToggleFlag={handleToggleShowFlag}
+          onExploreCatalog={() => {
+            document
+              .querySelector(".ep-container")
+              ?.scrollIntoView({ behavior: "smooth" });
+          }}
         />
       )}
 
@@ -531,6 +536,12 @@ export default function App() {
                   ratings={ratings}
                   currentUser={user}
                   onSelectShow={openQuickCard}
+                />
+                <TopTenWeekly
+                  allShows={allShows}
+                  ratings={ratings}
+                  onSelectShow={openQuickCard}
+                  onToggleFlag={handleToggleShowFlag}
                 />
 
                 <CategoryCarousel

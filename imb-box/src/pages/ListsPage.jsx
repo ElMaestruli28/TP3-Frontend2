@@ -86,7 +86,7 @@ export default function ListsPage({
       id: `user_list_${Date.now()}`,
       title: title.trim(),
       description:
-        description.trim() || "Colección personalizada de series en EPISODIA.",
+        description.trim() || "Colección personalizada de series en IMB-BOX.",
       author: author.trim() || "Usuario",
       avatarColor: "linear-gradient(135deg, var(--crimson), var(--gold))",
       shows: draftShows.map((s) => ({
@@ -361,7 +361,7 @@ export default function ListsPage({
       <div className="ep-lists-block" style={{ marginTop: "40px" }}>
         <div className="ep-pop-lists-topbar">
           <span className="ep-pop-lists-kicker">POPULAR LISTS</span>
-          <span className="ep-pop-lists-more">COMUNIDAD EPISODIA</span>
+          <span className="ep-pop-lists-more">COMUNIDAD IMB-BOX</span>
         </div>
 
         <div className="ep-pop-lists-grid">

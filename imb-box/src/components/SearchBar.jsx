@@ -144,7 +144,7 @@ export default function SearchBar({
                         <img
                           src={
                             show.image?.medium ||
-                            "https://via.placeholder.com/160x90/12141c/9499ad?text=EPISODIA"
+                            "https://via.placeholder.com/160x90/12141c/9499ad?text=IMB-BOX"
                           }
                           alt={show.name}
                         />

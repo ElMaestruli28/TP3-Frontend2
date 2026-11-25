@@ -64,7 +64,7 @@ export default function Footer() {
 
         <div className="ep-footer-legal-row">
           <p>
-            © Episodia Limited. Made by fans in Buenos Aires. Film & Series data from{" "}
+            © IMB-BOX Limited. Made by fans in Buenos Aires. Film & Series data from{" "}
             <a href="https://www.tvmaze.com/" target="_blank" rel="noreferrer">
               TVMaze API
             </a>

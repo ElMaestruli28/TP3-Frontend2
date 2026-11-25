@@ -102,7 +102,7 @@ export default function PopularReviews({
           poster:
             matchedShow?.image?.medium ||
             entry.poster ||
-            "https://via.placeholder.com/160x240/12141c/9499ad?text=EPISODIA",
+            "https://via.placeholder.com/160x240/12141c/9499ad?text=IMB-BOX",
           score: numericScore,
           stars: scoreToGreenStars(numericScore),
           hasHeart: Boolean(entry.liked),
@@ -125,7 +125,7 @@ export default function PopularReviews({
         year: found?.premiered ? found.premiered.slice(0, 4) : item.fallbackYear,
         poster:
           found?.image?.medium ||
-          "https://via.placeholder.com/160x240/12141c/9499ad?text=EPISODIA",
+          "https://via.placeholder.com/160x240/12141c/9499ad?text=IMB-BOX",
       };
     });
 

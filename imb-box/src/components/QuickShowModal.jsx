@@ -38,7 +38,7 @@ export default function QuickShowModal({
   
   const totalLikes = getShowLikesCount(currentShow, currentRating);
   const year = currentShow.premiered ? currentShow.premiered.slice(0, 4) : "Serie";
-  const posterUrl = currentShow.image?.original || currentShow.image?.medium || "https://via.placeholder.com/400x600/12141c/9499ad?text=EPISODIA";
+  const posterUrl = currentShow.image?.original || currentShow.image?.medium || "https://via.placeholder.com/400x600/12141c/9499ad?text=IMB-BOX";
 
   const epAverage = calculateEpisodeAverage(currentRating);
   const scoreMeta = getScoreMeta(generalScore);
@@ -153,7 +153,7 @@ export default function QuickShowModal({
               const itemPoster =
                 item.image?.original ||
                 item.image?.medium ||
-                "https://via.placeholder.com/400x600/12141c/9499ad?text=EPISODIA";
+                "https://via.placeholder.com/400x600/12141c/9499ad?text=IMB-BOX";
               const isCurrent = idx === activeIndex;
 
               return (
